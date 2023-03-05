@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <payment-page></payment-page>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import PaymentPage from './components/PaymentPage.vue';
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    PaymentPage
   }
 }
 </script>
@@ -22,5 +21,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+section {
+  border: 1px solid blue;
+}
+form {
+  border: 1px solid red;
 }
 </style>
