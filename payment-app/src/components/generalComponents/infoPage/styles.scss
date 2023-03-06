@@ -1,0 +1,62 @@
+@import "../../../assets/cssFiles/variables.scss";
+section {
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    align-items: center;
+    justify-content: space-between;
+    width: 960px;
+    height: 580px;
+    background: $info-body-color;
+    border-radius: 12px;
+}
+.information {
+    height: 580px;
+    padding: 60px 0 40px 56px;
+    color:$info-text-color;
+    &__logo {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 18px;
+        & img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 14px;
+        }
+        &-text {
+            font-size: 10px;
+        }
+    }
+    & h1 {
+        margin-bottom: 40px;
+        font-weight: 700;
+        font-size: 32px;
+        letter-spacing: -0.4px;
+    }
+    &__list {
+        &-item{
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        &-item span:first-child {
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.48);
+        }
+        &-item span:last-child {
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: -0.2px;
+        }
+    }
+    &__bottom-logo {
+        position: absolute;
+        bottom:32px;
+        left:56px
+    }
+}

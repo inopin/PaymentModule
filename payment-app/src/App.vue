@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import PaymentPage from './components/PaymentPage.vue';
+import PaymentPage from './components/generalComponents/paymentPage/PaymentComponent.vue';
 
 export default {
   name: 'App',
@@ -13,19 +13,4 @@ export default {
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-section {
-  border: 1px solid blue;
-}
-form {
-  border: 1px solid red;
-}
-</style>
+<style src="./assets/cssFiles/mainStyles.scss" lang='scss'></style>
