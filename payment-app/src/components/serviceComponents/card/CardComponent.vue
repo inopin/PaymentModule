@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import {formatPan} from './../../../utils.js'
 export default {
   data() {
     return {
@@ -34,13 +35,16 @@ export default {
   },
   methods: {
     inputDigits() {
-      this.pan = this.pan.replace(/[^\d]/g, '').replace(/\B(?=(?:\d{4})+(?!\d))/g, ' ')
+      this.pan = formatPan(this.pan)
+      this.panErrorMessage =''
     },
     checkValidation() {
       if(!this.pan) {
         this.panErrorMessage = 'введите номер карты'
       } else if(this.pan.length < 19) {
         this.panErrorMessage ='пожалуйста, введите карту полностью'
+      } else {
+        this.panErrorMessage =''
       }
     }
   }
