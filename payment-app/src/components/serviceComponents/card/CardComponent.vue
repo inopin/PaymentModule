@@ -6,13 +6,19 @@
               name="pan" 
               required 
               v-model="pan" 
-              @input="inputDigits"
-              @blur="checkValidation"
+              @input="panInput"
+              @blur="checkPanValidation"
               maxlength="19">
       <div class="input-error" v-if="panErrorMessage.length">{{panErrorMessage}}</div>
     </div>
     <div class="input__wrapper date">
-      <input type="tel" placeholder="date" name="date" required v-model="date">
+      <input  type="tel" 
+              placeholder="date" 
+              name="date" 
+              required 
+              v-model="date"
+              maxlength="9"
+              @input="dateInput">
       <div class="input-error">errorr message</div>
     </div>
     <div class="input__wrapper cvv">
@@ -23,7 +29,7 @@
 </template>
 
 <script>
-import {formatPan} from './../../../utils.js'
+import {formatPan, inputDigits} from './../../../utils.js'
 export default {
   data() {
     return {
@@ -34,11 +40,12 @@ export default {
     }
   },
   methods: {
-    inputDigits() {
+    panInput() {
+      this.pan = inputDigits(this.pan)
       this.pan = formatPan(this.pan)
       this.panErrorMessage =''
     },
-    checkValidation() {
+    checkPanValidation() {
       if(!this.pan) {
         this.panErrorMessage = 'введите номер карты'
       } else if(this.pan.length < 19) {
@@ -46,7 +53,11 @@ export default {
       } else {
         this.panErrorMessage =''
       }
+    },
+    dateInput() {
+      this.date = inputDigits(this.date)
     }
+
   }
 }
 </script>
