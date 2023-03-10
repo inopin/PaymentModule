@@ -30,8 +30,15 @@
       <div class="input-error" v-if="dateErrorMessage.length">{{dateErrorMessage}}</div>
     </div>
     <div class="input__wrapper cvv">
-      <input type="tel" placeholder="cvv" name="cvv" v-model="cvv">
-      <div class="input-error">errorr message</div>
+      <input  type="tel"
+              placeholder="cvv"
+              name="cvv"
+              v-model="cvv"
+              maxlength="3"
+              @input = "cvvInput"
+              @blur = "checkCvvValidation"
+      >
+      <div class="input-error" v-if="cvvMessageError.length">{{cvvMessageError}}</div>
     </div>
   </section>
 </template>
@@ -41,6 +48,7 @@ import {formatPan, inputDigits} from './../../../utils.js'
 export default {
   data() {
     return {
+      cvvMessageError:'',
       panErrorMessage:'',
       dateErrorMessage:'',
       pan: null,
@@ -68,6 +76,7 @@ export default {
       this.dateErrorMessage = ''
       this.date = inputDigits(this.date)
       this.date = this.date.length > 4 ? this.date.substring(0, 2) + this.date.substring(4, 6) : this.date.substring(0, 4);
+
       if(this.date.length >= 3) {
         this.date = this.date.substring(0, 2) + ' / ' + this.date.substring(2, 4)
       }
@@ -78,6 +87,7 @@ export default {
         if(parseInt(this.date.split(' / ')[0]) === 0) {
           this.date = '01' + this.date.substring(2, 4)
         }
+
         if(parseInt(this.date.split(' / ')[0]) > 12) {
           this.date = 12 + this.date.substring(2, 4)
         }
@@ -85,26 +95,41 @@ export default {
     },
 
     checkCardDateValidation() {
-    let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
-        isMonthValid = false,
-        isYearValid = false
+      let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
+          isMonthValid = false,
+          isYearValid = false
 
-    isMonthValid = parseInt(splitted[1]) === 22 ?
-        parseInt(splitted[0]) >= 3 && parseInt(splitted[0]) <= 12 :
-        parseInt(splitted[0]) > 0 && parseInt(splitted[0]) <= 12
+      isMonthValid = parseInt(splitted[1]) === 22 ?
+          parseInt(splitted[0]) >= 3 && parseInt(splitted[0]) <= 12 :
+          parseInt(splitted[0]) > 0 && parseInt(splitted[0]) <= 12
 
-    isYearValid = parseInt(splitted[1]) >= 22
-    isValidDate = isMonthValid && isYearValid
-      console.log(this.date.length >= 5 && isValidDate)
-    let isValid = this.date.length >= 5 && isValidDate
+      isYearValid = parseInt(splitted[1]) >= 22
+      isValidDate = isMonthValid && isYearValid
+        console.log(this.date.length >= 5 && isValidDate)
+      let isValid = this.date.length >= 5 && isValidDate
 
-    if(!isValid) {
-      this.dateErrorMessage = 'введите коррекную дату'
-    } else {
-      this.dateErrorMessage = ''
+      if(!isValid) {
+        this.dateErrorMessage = 'введите коррекную дату'
+      } else {
+        this.dateErrorMessage = ''
+      }
+    },
+
+    cvvInput() {
+      this.cvv = inputDigits(this.cvv)
+      this.cvvMessageError = ''
+    },
+
+    checkCvvValidation() {
+      if(!this.cvv.length) {
+        this.cvvMessageError = 'пожалуйста введите код карты'
+      } else if (this.cvv.length < 3) {
+        this.cvvMessageError = 'пожалуйста введите полный код карты'
+      } else {
+        this.cvvMessageError = ''
+      }
     }
 
-}
 
   }
 }
