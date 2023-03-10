@@ -65,6 +65,7 @@ export default {
       this.pan = formatPan(this.pan)
       this.panErrorMessage =''
     },
+
     checkPanValidation() {
       if(!this.pan) {
         this.panErrorMessage = 'введите номер карты'
@@ -74,6 +75,7 @@ export default {
         this.panErrorMessage =''
       }
     },
+
     dateInput(e) {
       if (e.inputType === 'deleteContentBackward') return
       this.dateErrorMessage = ''
@@ -95,7 +97,6 @@ export default {
           this.date = 12 + this.date.substring(2, 4)
         }
       }
-
     },
 
     checkCardDateValidation() {
@@ -113,7 +114,6 @@ export default {
       isValidDate = isMonthValid && isYearValid
       isValid = this.date.length >= 5 && isValidDate
       }
-
 
       if(!isValid) {
         this.dateErrorMessage = 'введите коррекную дату'
@@ -136,8 +136,6 @@ export default {
         this.cvvMessageError = ''
       }
     }
-
-
   }
 }
 </script>
