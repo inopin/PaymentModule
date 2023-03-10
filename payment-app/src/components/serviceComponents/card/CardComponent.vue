@@ -1,25 +1,33 @@
 <template>
   <section>
     <div class="input__wrapper pan">
-      <input  type="tel" 
-              placeholder="pan" 
-              name="pan" 
-              required 
-              v-model="pan" 
+      <input  type="tel"
+              placeholder="pan"
+              name="pan"
+              required
+              v-model="pan"
               @input="panInput"
               @blur="checkPanValidation"
               maxlength="19">
       <div class="input-error" v-if="panErrorMessage.length">{{panErrorMessage}}</div>
     </div>
     <div class="input__wrapper date">
-      <input  type="tel" 
-              placeholder="date" 
-              name="date" 
-              required 
+      <input  type="tel"
+              placeholder="date"
+              name="date"
+              required
               v-model="date"
               maxlength="9"
-              @input="dateInput">
-      <div class="input-error">errorr message</div>
+              @input="dateInput"
+              @blur="checkCardDateValidation"
+              >
+      <input type="hidden" name="month"
+              th:value="${page.cardData != null && page.cardData.month != null  ? page.cardData.month : ''}"
+              id="month"/>
+      <input type="hidden" name="year"
+              th:value="${page.cardData != null && page.cardData.year != null  ? page.cardData.year : ''}"
+              id="year"/>
+      <div class="input-error" v-if="dateErrorMessage.length">{{dateErrorMessage}}</div>
     </div>
     <div class="input__wrapper cvv">
       <input type="tel" placeholder="cvv" name="cvv" v-model="cvv">
@@ -34,6 +42,7 @@ export default {
   data() {
     return {
       panErrorMessage:'',
+      dateErrorMessage:'',
       pan: null,
       date: null,
       cvv:null,
@@ -54,9 +63,48 @@ export default {
         this.panErrorMessage =''
       }
     },
-    dateInput() {
+    dateInput(e) {
+      if (e.inputType === 'deleteContentBackward') return
+      this.dateErrorMessage = ''
       this.date = inputDigits(this.date)
+      this.date = this.date.length > 4 ? this.date.substring(0, 2) + this.date.substring(4, 6) : this.date.substring(0, 4);
+      if(this.date.length >= 3) {
+        this.date = this.date.substring(0, 2) + ' / ' + this.date.substring(2, 4)
+      }
+      if(this.date.length === 2) {
+        this.date = this.date + ' / '
+      }
+      if(this.date.length > 2) {
+        if(parseInt(this.date.split(' / ')[0]) === 0) {
+          this.date = '01' + this.date.substring(2, 4)
+        }
+        if(parseInt(this.date.split(' / ')[0]) > 12) {
+          this.date = 12 + this.date.substring(2, 4)
+        }
+      }
+    },
+
+    checkCardDateValidation() {
+    let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
+        isMonthValid = false,
+        isYearValid = false
+
+    isMonthValid = parseInt(splitted[1]) === 22 ?
+        parseInt(splitted[0]) >= 3 && parseInt(splitted[0]) <= 12 :
+        parseInt(splitted[0]) > 0 && parseInt(splitted[0]) <= 12
+
+    isYearValid = parseInt(splitted[1]) >= 22
+    isValidDate = isMonthValid && isYearValid
+      console.log(this.date.length >= 5 && isValidDate)
+    let isValid = this.date.length >= 5 && isValidDate
+
+    if(!isValid) {
+      this.dateErrorMessage = 'введите коррекную дату'
+    } else {
+      this.dateErrorMessage = ''
     }
+
+}
 
   }
 }
