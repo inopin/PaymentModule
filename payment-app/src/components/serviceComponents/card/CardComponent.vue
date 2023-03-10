@@ -8,7 +8,8 @@
               v-model="pan"
               @input="panInput"
               @blur="checkPanValidation"
-              maxlength="19">
+              maxlength="19"
+              novalidate>
       <div class="input-error" v-if="panErrorMessage.length">{{panErrorMessage}}</div>
     </div>
     <div class="input__wrapper date">
@@ -20,6 +21,7 @@
               maxlength="9"
               @input="dateInput"
               @blur="checkCardDateValidation"
+              novalidate
               >
       <input type="hidden" name="month"
               th:value="${page.cardData != null && page.cardData.month != null  ? page.cardData.month : ''}"
@@ -37,7 +39,8 @@
               maxlength="3"
               @input = "cvvInput"
               @blur = "checkCvvValidation"
-      >
+              novalidate
+              >
       <div class="input-error" v-if="cvvMessageError.length">{{cvvMessageError}}</div>
     </div>
   </section>
@@ -92,10 +95,13 @@ export default {
           this.date = 12 + this.date.substring(2, 4)
         }
       }
+
     },
 
     checkCardDateValidation() {
-      let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
+      let isValid = null
+      if(this.date) {
+        let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
           isMonthValid = false,
           isYearValid = false
 
@@ -105,8 +111,9 @@ export default {
 
       isYearValid = parseInt(splitted[1]) >= 22
       isValidDate = isMonthValid && isYearValid
-        console.log(this.date.length >= 5 && isValidDate)
-      let isValid = this.date.length >= 5 && isValidDate
+      isValid = this.date.length >= 5 && isValidDate
+      }
+
 
       if(!isValid) {
         this.dateErrorMessage = 'введите коррекную дату'
@@ -121,7 +128,7 @@ export default {
     },
 
     checkCvvValidation() {
-      if(!this.cvv.length) {
+      if(!this.cvv) {
         this.cvvMessageError = 'пожалуйста введите код карты'
       } else if (this.cvv.length < 3) {
         this.cvvMessageError = 'пожалуйста введите полный код карты'
