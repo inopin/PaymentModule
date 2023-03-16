@@ -74,6 +74,7 @@ export default {
       } else {
         this.panErrorMessage =''
       }
+      this.panSubmit(this.pan)
     },
 
     dateInput(e) {
@@ -120,6 +121,7 @@ export default {
       } else {
         this.dateErrorMessage = ''
       }
+      this.dateSubmit(this.date)
     },
 
     cvvInput() {
@@ -135,8 +137,42 @@ export default {
       } else {
         this.cvvMessageError = ''
       }
+      this.cvvSubmit(this.cvv)
+    },
+
+    panSubmit(pan) {
+      if(this.panErrorMessage === '' && pan) {
+        this.$emit('pan-submit', this.pan)
+      }
+    },
+    dateSubmit(date) {
+      if(this.dateErrorMessage === '' && date) {
+        this.$emit('date-submit', this.date)
+      }
+    },
+    cvvSubmit(cvv) {
+      if(this.cvvMessageError === '' && cvv) {
+        this.$emit('cvv-submit', this.cvv)
+      }
     }
-  }
+
+    // checkErrors() {
+    //   console.log(this.cvvMessageError === '' && this.dateErrorMessage === '' && this.panErrorMessage === '')
+    //     return this.cvvMessageError === '' && this.dateErrorMessage === '' && this.panErrorMessage === ''
+    // },
+
+    // paymentSubmit() {
+    //   if(this.checkErrors()) {
+    //     this.$emit('payment-submit',this.pan, this.date, this.cvv )
+    //   } else {
+    //     console.warn('invalid Data')
+    //   }
+
+    // }
+
+
+  },
+  emits: ['pan-submit','date-submit','cvv-submit']
 }
 </script>
 

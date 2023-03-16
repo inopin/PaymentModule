@@ -1,6 +1,6 @@
 <template>
   <section>
-    <button>ОПЛАТИТЬ</button>
+    <button  @click="submitHandler">ОПЛАТИТЬ</button>
   </section>
 </template>
 
