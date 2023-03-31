@@ -64,13 +64,11 @@ export default {
   watch:{
     paymentObj: {
       handler() {
-        let panMessage = this.panErrorMessage,
-            dateMessage = this.dateErrorMessage,
-            cvvMessage = this.cvvMessageError
-        console.log(panMessage && this.panBlur && dateMessage && this.dateBlur && cvvMessage &&)
-        if(errorMessage === '' && this.panBlur) {
-          alert('true')
-        }
+        // let panMessage = this.panErrorMessage,
+        //     dateMessage = this.dateErrorMessage,
+        //     cvvMessage = this.cvvMessageError
+        console.log(this.pan, this.date, this.cvv)
+
       },
       deep: true
     }
@@ -90,18 +88,16 @@ export default {
 
     dateErrorMessage() {
       let isValid = null
-      if(this.paymentObj.date) {
-        let splitted = this.paymentObj.date.replace(/\s/, '').split('/'), isValidDate,
+      if(this.date) {
+        let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
           isMonthValid = false,
           isYearValid = false
-
       isMonthValid = parseInt(splitted[1]) === 22 ?
           parseInt(splitted[0]) >= 3 && parseInt(splitted[0]) <= 12 :
           parseInt(splitted[0]) > 0 && parseInt(splitted[0]) <= 12
-
       isYearValid = parseInt(splitted[1]) >= 22
       isValidDate = isMonthValid && isYearValid
-      isValid = this.paymentObj.date.length >= 5 && isValidDate
+      isValid = this.date.length >= 5 && isValidDate
       }
 
       if(!isValid && this.dateBlur) {
@@ -125,22 +121,9 @@ export default {
   },
   methods: {
     panInput() {
-      // console.log(Object.keys(this.paymentObj))
       this.paymentObj.pan = inputDigits(this.paymentObj.pan)
       this.paymentObj.pan = formatPan(this.paymentObj.pan)
       this.panBlur = false
-    },
-
-    isPanBlur() {
-      this.panBlur = true
-    },
-
-    isDateBlur() {
-      this.dateBlur = true
-    },
-
-    isCvvBlur() {
-      this.cvvBlur = true
     },
 
     dateInput(e) {
@@ -171,6 +154,10 @@ export default {
       this.paymentObj.cvv = inputDigits(this.paymentObj.cvv)
       this.cvvBlur = false
     },
+
+    isFormValid () {
+
+    }
 
   },
   emits: ['pan-submit','date-submit','cvv-submit']
