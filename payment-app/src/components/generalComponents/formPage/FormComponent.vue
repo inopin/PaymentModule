@@ -1,20 +1,17 @@
 <template>
-  <form v-on:submit.prevent>
+  <form ref="form" @submit.prevent = "submitHandler"
+    method="post"
+    action="/something"
+    novalidate>
     <h2>Выберите способ оплаты</h2>
   <main-buttons></main-buttons>
   <card-input
-   @pan-submit="panToObj"
-   @date-submit="dateToObj"
-   @cvv-submit="cvvToObj"
+  :is-submitted="isSubmitted"
+   @card-data-change="onCardDataChanged"
   ></card-input>
-  <!-- <yandex-pay></yandex-pay> -->
-  <!-- <sbp-page></sbp-page> -->
-  <!-- <saved-cards></saved-cards> -->
-  <!-- <email-page></email-page> -->
   <amount-page></amount-page>
-  <!-- <submit-button></submit-button> -->
   <section class="submit__wrapper">
-    <button class="submit" @click="submitHandler">ОПЛАТИТЬ</button>
+    <button class="submit">ОПЛАТИТЬ</button>
   </section>
   </form>
 </template>
@@ -23,53 +20,35 @@
 
 import MainButtons from '../../serviceComponents/mainButtons/MainButtonsPage.vue';
 import CardInput from '../../serviceComponents/card/CardComponent.vue';
-// import YandexPay from '../../serviceComponents/YandexPay.vue';
-// import SbpPage from '../../serviceComponents/SbpPage.vue';
-// import EmailPage from '../../serviceComponents/EmailPage.vue';
 import AmountPage from '../../serviceComponents/amount/AmountComponent.vue';
-// import SubmitButton from '../../serviceComponents/submit/SubmitComponent.vue';
-// import SavedCards from '../../serviceComponents/SavedCards.vue';
-
-
 
 export default {
   components:{
     MainButtons,
     CardInput,
-    // YandexPay,
-    // SbpPage,
-    // EmailPage,
     AmountPage,
-    // SubmitButton,
-    // SavedCards
   },
   data() {
     return {
-      paymentObj: {
-        pan:null,
-        date:null,
-        cvv:null
-      }
+      paymentObj:null,
+      isPaymentDataValid: false,
+      isSubmitted: false,
     }
   },
   methods: {
     submitHandler() {
-      if(this.paymentObj.pan && this.paymentObj.date && this.paymentObj.cvv) {
-        console.log('form submitted',this.paymentObj)
-      } else {
-        console.warn('invalid Data')
+      this.isSubmitted = true
+      if(this.isPaymentDataValid ) {
+        alert(JSON.stringify(this.paymentObj) )
+        this.$refs.form.submit()
       }
+    },
 
+    onCardDataChanged(data) {
+      this.paymentObj = data
+      this.isPaymentDataValid = data.isValid
     },
-    panToObj(pan) {
-      this.paymentObj.pan = pan
-    },
-    dateToObj(date) {
-      this.paymentObj.date = date
-    },
-    cvvToObj(cvv) {
-      this.paymentObj.cvv = cvv
-    }
+
   }
 }
 </script>
