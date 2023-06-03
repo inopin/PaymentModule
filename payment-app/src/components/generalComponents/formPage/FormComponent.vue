@@ -9,6 +9,7 @@
   :is-submitted="isSubmitted"
    @card-data-change="onCardDataChanged"
   ></card-input>
+  <select-component></select-component>
   <amount-page></amount-page>
   <section class="submit__wrapper">
     <button class="submit">ОПЛАТИТЬ</button>
@@ -21,12 +22,14 @@
 import MainButtons from '../../serviceComponents/mainButtons/MainButtonsPage.vue';
 import CardInput from '../../serviceComponents/card/CardComponent.vue';
 import AmountPage from '../../serviceComponents/amount/AmountComponent.vue';
+import SelectComponent from '../../serviceComponents/select/SelectComponent.vue';
 
 export default {
   components:{
     MainButtons,
     CardInput,
     AmountPage,
+    SelectComponent
   },
   data() {
     return {
