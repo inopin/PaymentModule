@@ -5,22 +5,22 @@
               placeholder="pan"
               name="pan"
               required
-              v-model="pan"
+              v-model="paymentData.pan"
               @input="panInput"
-              @blur="checkPanValidation"
+              @blur="checkInputValidation('panBlur')"
               maxlength="19"
               novalidate>
-      <div class="input-error" v-if="panErrorMessage.length">{{panErrorMessage}}</div>
+      <div class="input-error" v-if="(panBlur || isSubmitted) && panError">{{panError}}</div>
     </div>
     <div class="input__wrapper date">
       <input  type="tel"
               placeholder="date"
               name="date"
               required
-              v-model="date"
+              v-model="paymentData.date"
               maxlength="9"
               @input="dateInput"
-              @blur="checkCardDateValidation"
+              @blur="checkInputValidation('dateBlur')"
               novalidate
               >
       <input type="hidden" name="month"
@@ -29,19 +29,19 @@
       <input type="hidden" name="year"
               th:value="${page.cardData != null && page.cardData.year != null  ? page.cardData.year : ''}"
               id="year"/>
-      <div class="input-error" v-if="dateErrorMessage.length">{{dateErrorMessage}}</div>
+      <div class="input-error" v-if="(dateBlur || isSubmitted) && dateError">{{dateError}}</div>
     </div>
     <div class="input__wrapper cvv">
       <input  type="tel"
               placeholder="cvv"
               name="cvv"
-              v-model="cvv"
+              v-model="paymentData.cvv"
               maxlength="3"
               @input = "cvvInput"
-              @blur = "checkCvvValidation"
+              @blur = "checkInputValidation('cvvBlur')"
               novalidate
               >
-      <div class="input-error" v-if="cvvMessageError.length">{{cvvMessageError}}</div>
+      <div class="input-error" v-if="(cvvBlur || isSubmitted) && cvvError">{{cvvError}}</div>
     </div>
   </section>
 </template>
@@ -51,59 +51,47 @@ import {formatPan, inputDigits} from './../../../utils.js'
 export default {
   data() {
     return {
-      cvvMessageError:'',
-      panErrorMessage:'',
-      dateErrorMessage:'',
-      pan: null,
-      date: null,
-      cvv:null,
+      panBlur: false,
+      dateBlur: false,
+      cvvBlur:false,
+      paymentData: {
+        pan: null,
+        date: null,
+        cvv: null,
+      }
     }
   },
-  methods: {
-    panInput() {
-      this.pan = inputDigits(this.pan)
-      this.pan = formatPan(this.pan)
-      this.panErrorMessage =''
+
+  watch: {
+    isValid(value){
+          if(value) {
+            this.$emit('card-data-change',{data:this.paymentData, isValid:value} )
+          }
+      }
+  },
+  props:{
+    isSubmitted:{
+      type: Boolean,
+      required:true
+    }
+  },
+  computed: {
+    isValid() {
+      return !(this.panError && this.dateError && this.cvvError)  //добавить тачтд
     },
 
-    checkPanValidation() {
-      if(!this.pan) {
-        this.panErrorMessage = 'введите номер карты'
-      } else if(this.pan.length < 19) {
-        this.panErrorMessage ='пожалуйста, введите карту полностью'
-      } else {
-        this.panErrorMessage =''
-      }
-      this.panSubmit(this.pan)
+    panError() {
+      if(!this.paymentData.pan) {
+        return 'введите карту'
+      } else if(this.paymentData.pan.length < 19) {
+        return 'введите карту полностью'
+      } return ''
     },
 
-    dateInput(e) {
-      if (e.inputType === 'deleteContentBackward') return
-      this.dateErrorMessage = ''
-      this.date = inputDigits(this.date)
-      this.date = this.date.length > 4 ? this.date.substring(0, 2) + this.date.substring(4, 6) : this.date.substring(0, 4);
-
-      if(this.date.length >= 3) {
-        this.date = this.date.substring(0, 2) + ' / ' + this.date.substring(2, 4)
-      }
-      if(this.date.length === 2) {
-        this.date = this.date + ' / '
-      }
-      if(this.date.length > 2) {
-        if(parseInt(this.date.split(' / ')[0]) === 0) {
-          this.date = '01' + this.date.substring(2, 4)
-        }
-
-        if(parseInt(this.date.split(' / ')[0]) > 12) {
-          this.date = 12 + this.date.substring(2, 4)
-        }
-      }
-    },
-
-    checkCardDateValidation() {
+    dateError() {
       let isValid = null
-      if(this.date) {
-        let splitted = this.date.replace(/\s/, '').split('/'), isValidDate,
+      if(this.paymentData.date) {
+        let splitted = this.paymentData.date.replace(/\s/, '').split('/'), isValidDate,
           isMonthValid = false,
           isYearValid = false
 
@@ -113,66 +101,69 @@ export default {
 
       isYearValid = parseInt(splitted[1]) >= 22
       isValidDate = isMonthValid && isYearValid
-      isValid = this.date.length >= 5 && isValidDate
+      isValid = this.paymentData.date.length >= 5 && isValidDate
       }
 
       if(!isValid) {
-        this.dateErrorMessage = 'введите коррекную дату'
+        return 'введите коррекную дату'
       } else {
-        this.dateErrorMessage = ''
+        return ''
       }
-      this.dateSubmit(this.date)
+    },
+    cvvError() {
+      if(!this.paymentData.cvv) {
+        return 'пожалуйста введите код карты'
+      } else if (this.paymentData.cvv.length < 3) {
+        return'пожалуйста введите полный код карты'
+      } else {
+        return ''
+      }
+    }
+  },
+
+  methods: {
+    panInput() {
+      this.paymentData.pan = inputDigits(this.paymentData.pan)
+      this.paymentData.pan = formatPan(this.paymentData.pan)
+    },
+
+    checkInputValidation(inputName) {
+      this[inputName] = true
+    },
+
+    dateInput(e) {
+      if (e.inputType === 'deleteContentBackward') return
+      this.dateErrorMessage = ''
+      this.paymentData.date = inputDigits(this.paymentData.date)
+      this.paymentData.date = this.paymentData.date.length > 4 ? this.paymentData.date.substring(0, 2) + this.paymentData.date.substring(4, 6) : this.paymentData.date.substring(0, 4);
+
+      if(this.paymentData.date.length >= 3) {
+        this.paymentData.date = this.paymentData.date.substring(0, 2) + ' / ' + this.paymentData.date.substring(2, 4)
+      }
+      if(this.paymentData.date.length === 2) {
+        this.paymentData.date = this.paymentData.date + ' / '
+      }
+      if(this.paymentData.date.length > 2) {
+        if(parseInt(this.paymentData.date.split(' / ')[0]) === 0) {
+          this.paymentData.date = '01' + this.paymentData.date.substring(2, 4)
+        }
+
+        if(parseInt(this.paymentData.date.split(' / ')[0]) > 12) {
+          this.paymentData.date = 12 + this.paymentData.date.substring(2, 4)
+        }
+      }
     },
 
     cvvInput() {
-      this.cvv = inputDigits(this.cvv)
+      this.paymentData.cvv = inputDigits(this.paymentData.cvv)
       this.cvvMessageError = ''
     },
 
-    checkCvvValidation() {
-      if(!this.cvv) {
-        this.cvvMessageError = 'пожалуйста введите код карты'
-      } else if (this.cvv.length < 3) {
-        this.cvvMessageError = 'пожалуйста введите полный код карты'
-      } else {
-        this.cvvMessageError = ''
-      }
-      this.cvvSubmit(this.cvv)
-    },
 
-    panSubmit(pan) {
-      if(this.panErrorMessage === '' && pan) {
-        this.$emit('pan-submit', this.pan)
-      }
-    },
-    dateSubmit(date) {
-      if(this.dateErrorMessage === '' && date) {
-        this.$emit('date-submit', this.date)
-      }
-    },
-    cvvSubmit(cvv) {
-      if(this.cvvMessageError === '' && cvv) {
-        this.$emit('cvv-submit', this.cvv)
-      }
-    }
-
-    // checkErrors() {
-    //   console.log(this.cvvMessageError === '' && this.dateErrorMessage === '' && this.panErrorMessage === '')
-    //     return this.cvvMessageError === '' && this.dateErrorMessage === '' && this.panErrorMessage === ''
-    // },
-
-    // paymentSubmit() {
-    //   if(this.checkErrors()) {
-    //     this.$emit('payment-submit',this.pan, this.date, this.cvv )
-    //   } else {
-    //     console.warn('invalid Data')
-    //   }
-
-    // }
 
 
   },
-  emits: ['pan-submit','date-submit','cvv-submit']
+  emits: ['card-data-change']
 }
 </script>
 
