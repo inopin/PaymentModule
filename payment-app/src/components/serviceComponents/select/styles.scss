@@ -13,6 +13,14 @@
     text-transform: uppercase;
     cursor: pointer;
 }
+.search {
+    margin: 3px 0px;
+    & input {
+        width: 100%;
+        height:25px
+        
+    }
+}
 .options {
     position: absolute;
     width: 100%;
