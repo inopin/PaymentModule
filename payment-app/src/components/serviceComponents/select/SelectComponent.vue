@@ -1,69 +1,63 @@
 <template>
   <div class="select">
-    <input type="hidden" v-model="this.selectedOption">
-    <p class="title" @click="this.listVisible = !this.listVisible">{{ this.selectedOption }}</p>
-    <div class="options" v-if="this.listVisible">
-      <div class="search">
-        <input type="text" placeholder="выберите банк" v-model="searchValue">
-      </div>
-      <div v-for="item in searchArray"
-        :key="item.index"
+    <div class="search">
+        <input type="text" v-bind:placeholder="placeholder"
+        v-model="itemName"
+        @click="listVisible = !listVisible">
+    </div>
+    <div class="options" v-if="listVisible">
+      <div v-for="item in filteredOptions"
+        :key="item[idName]"
         class="item"
         @click="selectItem(item)">
-        <p>{{ item.bankName }}</p>
+        <p>{{ item[valueName] }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+
   export default {
-    inject: {
-      options: {
-        type: Array,
-        default() {
-          return []
-        }
-      }
-    },
-    methods: {
-      selectItem(item) {
-        this.selectedOption = item.bankName,
-        this.hideSelect()
-      },
-      hideSelect() {
-        this.listVisible= false
-      },
-      search(val, arr) {
-        let result = []
-        arr.forEach(item =>{
-          if(item.bankName.indexOf(val)!=-1) {
-            result.push(item)
-          }
-        })
-        this.searchArray = result
-      },
-    },
-    watch:{
-        searchValue: function() {
-          this.searchArray = this.options
-          this.search(this.searchValue, this.searchArray)
-        }
-    },
-    mounted(){
-      //  document.addEventListener('click', this.hideSelect.bind(this), true)
-    },
-    beforeUnmount(){
-      // document.removeEventListener('click', this.hideSelect.bind(this), true)
+
+    props:{
+      placeholder:String,
+      incomingArray:{
+        type:Array,
+          required: true},
+      idName: String,
+      valueName: String
     },
     data() {
       return {
         listVisible: false,
-        selectedOption: 'выберите банк',
-        searchValue:'',
-        searchArray : this.options
+        itemName: ''
+
       }
+    },
+    methods: {
+      selectItem(item) {
+        this.itemName = item[this.valueName]
+        this.hideSelect()
+      },
+      hideSelect() {
+        this.listVisible= false
+      }
+    },
+    computed: {
+      filteredOptions(){
+        return this.incomingArray.filter(option => {
+          return option[this.valueName].toLowerCase().includes(this.itemName.toLowerCase())
+        })
+      }
+    },
+    mounted(){
+       document.addEventListener('click', this.hideSelect.bind(this), true)
+    },
+    beforeUnmount(){
+      document.removeEventListener('click', this.hideSelect.bind(this), true)
     }
+
   }
 </script>
 
