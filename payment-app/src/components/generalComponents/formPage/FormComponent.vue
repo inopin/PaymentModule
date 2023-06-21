@@ -49,7 +49,7 @@ export default {
       paymentObj:null,
       isPaymentDataValid: false,
       isSubmitted: false,
-      selectArray:[]
+      // selectArray:[]
     }
   },
   methods: {
